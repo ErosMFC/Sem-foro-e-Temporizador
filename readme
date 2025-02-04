@@ -1,0 +1,37 @@
+Semáforo e Temporizador
+Este projeto utiliza um microcontrolador (ex: Raspberry Pi Pico) programado em C para controlar LEDs, representando um semáforo e um temporizador.
+
+Pré-requisitos
+Hardware: Raspberry Pi Pico, 3 LEDs (vermelho, amarelo, verde), resistores, fios de conexão.
+Software: Ambiente de desenvolvimento como o VS Code ou Arduino IDE com a ferramenta de compilação para Raspberry Pi Pico configurada.
+Estrutura do Projeto
+semaforo.c: Código para controlar o semáforo, alterando a sequência dos LEDs.
+temporizador.c: Código para controlar o temporizador, usando LEDs para indicar a contagem regressiva.
+Como Executar
+Clonando o Repositório:
+
+bash
+Copiar
+Editar
+git clone https://github.com/ErosMFC/Semaforo_e_Temporizador.git
+Configurando o Hardware:
+
+Conecte 3 LEDs aos pinos GPIO do Raspberry Pi Pico.
+Utilize resistores (geralmente 220Ω) para evitar danos aos LEDs e pinos do microcontrolador.
+Configuração do Ambiente de Desenvolvimento:
+
+Se usar o VS Code, instale a extensão "C/C++" e configure o SDK do Raspberry Pi Pico.
+Se usar o Arduino IDE, configure a placa Raspberry Pi Pico no menu "Placa".
+Carregar o Código:
+
+Compile e faça o upload do código para o Raspberry Pi Pico através do ambiente de desenvolvimento escolhido.
+Executando o Código:
+
+Execute semaforo.c para acionar o semáforo.
+Execute temporizador.c para iniciar o temporizador.
+Funcionalidades
+Semáforo: LEDs alternam entre verde, amarelo e vermelho em sequência, com intervalos configuráveis no código.
+Temporizador: LEDs indicam a contagem regressiva com tempos definidos no código.
+Como Modificar
+Para ajustar os tempos, altere os valores de delay no código de semaforo.c e temporizador.c.
+Modifique os pinos GPIO nos quais os LEDs estão conectados, se necessário.
