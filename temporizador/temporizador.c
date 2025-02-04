@@ -59,17 +59,32 @@ bool button_pressed() {
     return false;
 }
 
+// Função para reiniciar a sequência de LEDs
+void restart_led_sequence() {
+    sequencia_ativa = true;
+    estado_led = 1;  // Começa com o LED azul
+    gpio_put(LED_BLUE, 1);  // Acende o LED azul
+    gpio_put(LED_RED, 0);   // Garante que o LED vermelho esteja apagado
+    gpio_put(LED_GREEN, 0); // Garante que o LED verde esteja apagado
+
+    // Reinicia a sequência com o LED azul aceso
+    add_alarm_in_ms(3000, timer_callback, NULL, false);  // Inicia o temporizador
+}
+
 // Função para acionar a sequência de LEDs ao pressionar o botão
 void button_callback() {
-    if (!sequencia_ativa && button_pressed()) {  // Verifica o estado do botão com debounce
-        sequencia_ativa = true;
-        estado_led = 1;  // Começa com o LED azul
-        gpio_put(LED_BLUE, 1);  // Acende o LED azul
-        gpio_put(LED_RED, 0);   // Garante que o LED vermelho esteja apagado
-        gpio_put(LED_GREEN, 0); // Garante que o LED verde esteja apagado
-
-        // Reinicia a sequência com o LED azul aceso
-        add_alarm_in_ms(3000, timer_callback, NULL, false);  // Inicia o temporizador
+    if (button_pressed()) {  // Verifica o estado do botão com debounce
+        if (!sequencia_ativa) {  // Se a sequência não estiver ativa
+            restart_led_sequence();  // Reinicia a sequência de LEDs
+        } else {
+            // Caso a sequência esteja ativa, reinicia a sequência imediatamente
+            estado_led = 1;
+            gpio_put(LED_BLUE, 1);  // Acende o LED azul
+            gpio_put(LED_RED, 0);   // Garante que o LED vermelho esteja apagado
+            gpio_put(LED_GREEN, 0); // Garante que o LED verde esteja apagado
+            sequencia_ativa = false;  // Interrompe a sequência e reinicia
+            restart_led_sequence();  // Reinicia a sequência
+        }
     }
 }
 
