@@ -32,3 +32,51 @@ Em resumo, o código simula o funcionamento de um semáforo com LEDs, alternando
 
 Temporizador:
 
+O código apresentado implementa um controle de LEDs e um botão para iniciar e reiniciar uma sequência de LEDs com debounce e controle de temporização no Raspberry Pi Pico. A seguir, explico o funcionamento detalhado do código:
+
+### 1. **Definição dos Pinos dos LEDs e do Botão**:
+   - Os LEDs são controlados pelos pinos GPIO 11 (azul), 12 (vermelho) e 13 (verde).
+   - O botão é conectado ao pino GPIO 5, e um resistor de pull-up é ativado para garantir que o botão esteja em um nível lógico alto quando não pressionado.
+
+### 2. **Variáveis Globais**:
+   - `estado_led`: Armazena o estado atual da sequência de LEDs. Os estados são numerados de 0 a 3, correspondendo à sequência de LEDs.
+   - `sequencia_ativa`: Indica se a sequência de LEDs está ativa.
+   - `pending_restart`: Flag que indica se há um pedido de reinício pendente da sequência.
+   - `ultimo_press_timestamp`: Marca o momento do último pressionamento do botão para gerenciar o tempo de debounce.
+   - `DEBOUNCE_DELAY`: Define o tempo de debounce para o botão, evitando múltiplas leituras do mesmo pressionamento.
+
+### 3. **Função `setup_gpio`**:
+   - Configura os pinos dos LEDs como saída (`GPIO_OUT`).
+   - Configura o pino do botão como entrada (`GPIO_IN`) e ativa o resistor de pull-up.
+
+### 4. **Função `timer_callback`**:
+   - Esta função é chamada pelo temporizador a cada 3 segundos para alternar os LEDs:
+     - No estado `1`, acende o LED vermelho e apaga o azul.
+     - No estado `2`, acende o LED verde e apaga o vermelho.
+     - No estado `3`, a sequência termina e o LED verde é apagado.
+   - Se o parâmetro `user_data` for igual a "restart", a sequência de LEDs é reiniciada.
+   - A função também verifica se há um pedido de reinício pendente e, se houver, inicia uma nova sequência após um breve intervalo.
+
+### 5. **Função `button_pressed`**:
+   - Realiza a verificação do estado do botão com debounce. Só considera um novo pressionamento se o tempo desde o último pressionamento for maior que o tempo de debounce definido (`DEBOUNCE_DELAY`).
+
+### 6. **Função `restart_led_sequence`**:
+   - Inicia a sequência de LEDs. O LED azul é aceso e os outros LEDs são apagados. Em seguida, inicia a transição de LEDs após 3 segundos.
+
+### 7. **Função `button_callback`**:
+   - Verifica o estado do botão e decide a ação a ser tomada:
+     - Se nenhuma sequência estiver ativa, inicia a sequência de LEDs imediatamente.
+     - Se uma sequência já estiver ativa, marca um pedido de reinício para ser executado quando a sequência atual terminar.
+
+### 8. **Função `main`**:
+   - Inicializa os GPIOs e o timestamp do botão.
+   - Entra em um loop contínuo, verificando e processando o estado do botão e mantendo o microcontrolador ativo para processar os eventos.
+
+### Como Funciona:
+1. O código começa com todos os LEDs apagados.
+2. Quando o botão é pressionado, se nenhuma sequência de LEDs estiver ativa, o LED azul acende e a sequência começa. A cada 3 segundos, o código alterna os LEDs para o vermelho e depois para o verde.
+3. Se o botão for pressionado durante a execução da sequência, o pedido de reinício é armazenado e, após a conclusão da sequência, ela reiniciará a partir do LED azul.
+4. O debounce garante que o botão não seja contado várias vezes em um curto período de tempo.
+
+Este programa gerencia uma sequência de LEDs, permitindo sua reinicialização ao pressionar o botão, e utilizando um temporizador para controlar as transições entre os LEDs.
+
