@@ -1,37 +1,34 @@
-Semáforo e Temporizador
-Este projeto utiliza um microcontrolador (ex: Raspberry Pi Pico) programado em C para controlar LEDs, representando um semáforo e um temporizador.
+SEMAFORO:
 
-Pré-requisitos
-Hardware: Raspberry Pi Pico, 3 LEDs (vermelho, amarelo, verde), resistores, fios de conexão.
-Software: Ambiente de desenvolvimento como o VS Code ou Arduino IDE com a ferramenta de compilação para Raspberry Pi Pico configurada.
-Estrutura do Projeto
-semaforo.c: Código para controlar o semáforo, alterando a sequência dos LEDs.
-temporizador.c: Código para controlar o temporizador, usando LEDs para indicar a contagem regressiva.
-Como Executar
-Clonando o Repositório:
+1. **Definição dos Pinos dos LEDs**: 
+   - São definidos os pinos de controle para cada LED: 
+     - `LED_VERMELHO` está no pino GPIO 11.
+     - `LED_AMARELO` está no pino GPIO 12.
+     - `LED_VERDE` está no pino GPIO 13.
 
-bash
-Copiar
-Editar
-git clone https://github.com/ErosMFC/Semaforo_e_Temporizador.git
-Configurando o Hardware:
+2. **Estado do Semáforo**:
+   - A variável `estado_semaforo` armazena o estado atual do semáforo:
+     - `0` para o LED vermelho aceso.
+     - `1` para os LEDs vermelho e verde acesos (representando o amarelo).
+     - `2` para o LED verde aceso.
 
-Conecte 3 LEDs aos pinos GPIO do Raspberry Pi Pico.
-Utilize resistores (geralmente 220Ω) para evitar danos aos LEDs e pinos do microcontrolador.
-Configuração do Ambiente de Desenvolvimento:
+3. **Função de Callback do Temporizador**:
+   - A função `repeating_timer_callback` é chamada repetidamente pelo temporizador a cada 3000 milissegundos (3 segundos).
+   - Esta função apaga todos os LEDs (configurando-os para 0).
+   - Dependendo do valor de `estado_semaforo`, a função acende o LED correspondente:
+     - No estado `0`, o LED vermelho é aceso.
+     - No estado `1`, os LEDs vermelho e verde são acesos simultaneamente, simulando o amarelo.
+     - No estado `2`, o LED verde é aceso.
+   - Após acender o LED correspondente, o estado do semáforo é alterado para o próximo (circular entre os estados 0, 1 e 2) usando a expressão `(estado_semaforo + 1) % 3`.
+   - A função retorna `true` para garantir que o temporizador continue chamando a função repetidamente.
 
-Se usar o VS Code, instale a extensão "C/C++" e configure o SDK do Raspberry Pi Pico.
-Se usar o Arduino IDE, configure a placa Raspberry Pi Pico no menu "Placa".
-Carregar o Código:
+4. **Função `main`**:
+   - Inicializa a comunicação padrão para usar a função `printf` para exibir o estado do semáforo no terminal.
+   - Configura os pinos GPIO 11, 12 e 13 como saída.
+   - Configura o temporizador para chamar a função `repeating_timer_callback` a cada 3000 milissegundos (3 segundos).
+   - Um laço `while (true)` é utilizado para imprimir o estado atual do semáforo a cada 1 segundo. Isso serve para monitorar e exibir no console qual LED está aceso a cada momento.
 
-Compile e faça o upload do código para o Raspberry Pi Pico através do ambiente de desenvolvimento escolhido.
-Executando o Código:
+Em resumo, o código simula o funcionamento de um semáforo com LEDs, alternando entre os estados de "vermelho", "amarelo" e "verde", e imprime o estado atual no terminal a cada segundo. A troca de estados é controlada automaticamente pelo temporizador.
 
-Execute semaforo.c para acionar o semáforo.
-Execute temporizador.c para iniciar o temporizador.
-Funcionalidades
-Semáforo: LEDs alternam entre verde, amarelo e vermelho em sequência, com intervalos configuráveis no código.
-Temporizador: LEDs indicam a contagem regressiva com tempos definidos no código.
-Como Modificar
-Para ajustar os tempos, altere os valores de delay no código de semaforo.c e temporizador.c.
-Modifique os pinos GPIO nos quais os LEDs estão conectados, se necessário.
+Temporizador:
+
